@@ -11,29 +11,30 @@ jobs:
   install:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+
       - uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::720800607391:role/github-action-deploy-role
           aws-region: us-east-1
 
-      - name: Install Docker + AWS CLI on fleet
+      - name: Upload script to S3
+        run: |
+          aws s3 cp scripts/provision-tools.sh \
+            s3://720800607391-devops-scripts/provision-tools.sh \
+            --region us-east-1
+
+      - name: Run script on fleet via SSM
         id: install
         run: |
           CMD_ID=$(aws ssm send-command \
             --targets "Key=tag:App,Values=flask" \
             --document-name "AWS-RunShellScript" \
             --parameters '{"commands":[
-              "export DEBIAN_FRONTEND=noninteractive",
-              "apt-get update -qq 2>/dev/null",
-              "apt-get install -y -qq unzip curl docker.io 2>/dev/null",
-              "systemctl enable docker --quiet 2>/dev/null",
-              "systemctl start docker 2>/dev/null",
-              "curl -sS https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o /tmp/awscliv2.zip",
-              "unzip -oq /tmp/awscliv2.zip -d /tmp 2>/dev/null",
-              "/tmp/aws/install --update 2>/dev/null",
-              "rm -rf /tmp/awscliv2.zip /tmp/aws",
-              "echo Docker: $(docker --version)",
-              "echo AWSCLI: $(aws --version)"
+              "aws s3 cp s3://720800607391-devops-scripts/provision-tools.sh /tmp/provision-tools.sh",
+              "chmod +x /tmp/provision-tools.sh",
+              "bash /tmp/provision-tools.sh",
+              "rm /tmp/provision-tools.sh"
             ]}' \
             --query 'Command.CommandId' \
             --output text \
@@ -42,14 +43,39 @@ jobs:
 
       - name: Wait + Verify
         run: |
-          sleep 90
+          echo "Waiting for installation..."
+
+          for i in {1..20}; do
+            STATUS=$(aws ssm list-command-invocations \
+              --command-id "${{ steps.install.outputs.cmd_id }}" \
+              --query "CommandInvocations[*].Status" \
+              --output text \
+              --region us-east-1)
+
+            echo "Attempt $i — Status: $STATUS"
+
+            if echo "$STATUS" | grep -q "InProgress\|Pending"; then
+              sleep 20
+            else
+              break
+            fi
+          done
+
+          echo ""
+          echo "============ INSTALL RESULTS ============"
 
           aws ssm list-command-invocations \
             --command-id "${{ steps.install.outputs.cmd_id }}" \
             --details \
-            --query "CommandInvocations[*].{Instance:InstanceId,Status:Status,Output:CommandPlugins[0].Output}" \
-            --output table \
-            --region us-east-1
+            --region us-east-1 \
+            --query "CommandInvocations[*].[InstanceId,Status,CommandPlugins[0].Output]" \
+            --output text | while IFS=$'\t' read -r instance status output; do
+              echo "Instance : $instance"
+              echo "Status   : $status"
+              echo "Result   :"
+              echo "$output" | grep -E "^(Docker|AWSCLI|✅):" || echo "$output" | tail -3
+              echo "-----------------------------------------"
+            done
 
           FAILED=$(aws ssm list-command-invocations \
             --command-id "${{ steps.install.outputs.cmd_id }}" \
@@ -61,4 +87,4 @@ jobs:
             echo "::error::Install failed on $FAILED instance(s)!" && \
             exit 1
 
-          echo "✅ Docker + AWS CLI installed on all fleet!"
+          echo "✅ All fleet provisioned successfully!"
