@@ -4,7 +4,8 @@ on:
   push:
     branches:
       - main
-      
+    paths:
+      - '2-Tier-Deployment/Banking-app/**'
   workflow_dispatch:
     inputs:
       run_install:
@@ -13,10 +14,6 @@ on:
         default: false
       run_health:
         description: Run health check?
-        type: boolean
-        default: true
-      run_deploy:
-        description: Run deployment?
         type: boolean
         default: true
 
@@ -45,23 +42,10 @@ jobs:
       id-token: write
       contents: read
 
-  deploy:
-    needs: health-before
-    if: |
-      always() &&
-      (inputs.run_deploy == true || inputs.run_deploy == '') &&
-      (needs.health-before.result == 'success' || needs.health-before.result == 'skipped')
-    uses: ./.github/workflows/deploy.yml
-    permissions:
-      id-token: write
-      contents: read
+  # deploy:          ← commented out
+  #   needs: health-before
+  #   uses: ./.github/workflows/deploy.yml
 
-  health-after:
-    needs: deploy
-    if: |
-      always() &&
-      needs.deploy.result == 'success'
-    uses: ./.github/workflows/test_fleet.yml
-    permissions:
-      id-token: write
-      contents: read
+  # health-after:    ← commented out
+  #   needs: deploy
+  #   uses: ./.github/workflows/test_fleet.yml

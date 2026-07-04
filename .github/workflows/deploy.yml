@@ -1,0 +1,8 @@
+name: Deploy SimpleBank
+
+on:
+  workflow_call:    
+
+jobs:
+  build-and-deploy:
+    
