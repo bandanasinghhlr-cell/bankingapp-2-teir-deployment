@@ -6,10 +6,6 @@ on:
       - main
   workflow_dispatch:
     inputs:
-      run_install:
-        description: Install Docker + AWS CLI?
-        type: boolean
-        default: false
       run_health:
         description: Run health check?
         type: boolean
@@ -26,19 +22,11 @@ jobs:
       id-token: write
       contents: read
 
-  install:
-    needs: test
-    if: ${{ inputs.run_install == true }}
-    uses: ./.github/workflows/tools_install.yml
-    permissions:
-      id-token: write
-      contents: read
-
   health-before:
-    needs: install
+    needs: test
     if: |
       always() &&
-      (needs.install.result == 'success' || needs.install.result == 'skipped')
+      (inputs.run_health == true || github.event_name == 'push')
     uses: ./.github/workflows/test_fleet.yml
     permissions:
       id-token: write
@@ -48,7 +36,7 @@ jobs:
     needs: health-before
     if: |
       always() &&
-      (inputs.run_deploy == true || inputs.run_deploy == '') &&
+      (inputs.run_deploy == true || github.event_name == 'push') &&
       (needs.health-before.result == 'success' || needs.health-before.result == 'skipped')
     uses: ./.github/workflows/deploy.yml
     permissions:
