@@ -30,8 +30,10 @@ jobs:
               "mysql --version 2>/dev/null || echo MYSQL NOT INSTALLED",
               "aws ssm get-parameters-by-path --path /application/banking --with-decryption --region us-east-1"
               ]}' \
-            --query 'Command.CommandId' --output text \
-            --region us-east-1)
+            --query 'Command.CommandId' \
+            --output text \
+            --region us-east-1
+            )
           echo "cmd_id=$CMD_ID" >> $GITHUB_OUTPUT
       
       
@@ -42,7 +44,7 @@ jobs:
             --command-id "${{steps.health.outputs.cmd_id}}" \
             --details \
             --region us-east-1 \
-            --query "CommandInvocations[*].[InstanceId,Status,IP,CommandPlugins[0].Output]" \
+            --query "CommandInvocations[*].[InstanceId,Status,CommandPlugins[0].Output]" \
             --output text 
           
           FAILED=$(aws ssm list-command-invocations \
