@@ -28,7 +28,7 @@ jobs:
               "docker --version 2>/dev/null || echo DOCKER NOT INSTALLED",
               "aws --version 2>/dev/null || echo AWS CLI NOT INSTALLED",
               "mysql --version 2>/dev/null || echo MYSQL NOT INSTALLED",
-              "aws ssm get-parameters-by-path --path /application/banking --with-decryption --region us-east-1 --output text"
+              "aws ssm get-parameters-by-path --path /application/banking --with-decryption --region us-east-1 | grep -E Name\\|Value"
               ]}' \
             --query 'Command.CommandId' \
             --output text \
@@ -44,7 +44,6 @@ jobs:
             --command-id "${{ steps.health.outputs.cmd_id }}" \
             --details \
             --region us-east-1 \
-            --query "CommandInvocations[*].[InstanceId,Status,CommandPlugins[0].Output]" \
             --output text 
           
           FAILED=$(aws ssm list-command-invocations \
