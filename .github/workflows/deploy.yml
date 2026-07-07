@@ -13,7 +13,6 @@ env:
   IMAGE: 720800607391.dkr.ecr.us-east-1.amazonaws.com/flaskapp-simple-bank
   REGION: us-east-1
   S3_BUCKET: s3://720800607391-devops-scripts
-  ECR_REGISTRY: 720800607391.dkr.ecr.us-east-1.amazonaws.com
 
 jobs:
   build-and-deploy:
@@ -33,7 +32,7 @@ jobs:
         run: |
           aws ecr get-login-password --region ${{ env.REGION }} | \
           docker login --username AWS --password-stdin \
-          ${{ env.ECR_REGISTRY }}
+          720800607391.dkr.ecr.${{ env.REGION }}.amazonaws.com
           echo "Login Successfull to ECR ✅"
 
       - name: Build and Push image
