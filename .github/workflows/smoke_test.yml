@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          repository: bandanasinghhlr-cell/bankingapp-2-tier-deployment
+          repository: bandanasinghhlr-cell/bankingapp-2-teir-deployment
           ref: main
 
       - uses: aws-actions/configure-aws-credentials@v4
