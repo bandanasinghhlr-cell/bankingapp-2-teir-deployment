@@ -10,9 +10,9 @@ permissions:
 env:
   VERSION: v1
   REGION: us-east-1
-  ECR: 720800607391.dkr.ecr.us-east-1.amazonaws.com
-  IMAGE: 720800607391.dkr.ecr.us-east-1.amazonaws.com/flaskapp-simple-bank
-  S3_BUCKET: s3://720800607391-devops-scripts
+  ECR: 879246538736.dkr.ecr.us-east-1.amazonaws.com
+  IMAGE: 879246538736.dkr.ecr.us-east-1.amazonaws.com/flaskapp-simple-bank
+  S3_BUCKET: s3://879246538736-devops-scripts
 
 jobs:
   build-and-deploy:
@@ -20,12 +20,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          repository: DEVENDRA-5470/banking-app-2-tier
+          repository: bandanasinghhlr-cell/bankingapp-2-teir-deployment
+
           ref: main
 
       - uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::720800607391:role/github-action-deploy-role
+          role-to-assume: arn:aws:iam::879246538736:role/github-action-deploy-role
           aws-region: ${{ env.REGION }}
 
       - name: Login to ECR
