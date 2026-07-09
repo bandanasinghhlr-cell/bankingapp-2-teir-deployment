@@ -22,7 +22,7 @@ jobs:
       contents: read
 
   deploying:
-    needs: verify_connection
+    needs: smoke_test
     uses: ./.github/workflows/deploy.yml
     permissions:
       id-token: write
