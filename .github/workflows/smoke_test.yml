@@ -33,9 +33,10 @@ jobs:
             --targets "Key=tag:App,Values=flask" \
             --document-name "AWS-RunShellScript" \
             --parameters '{"commands":[
+              "set -e",
               "aws s3 cp s3://879246538736-devops-scripts/smoke_test.py /tmp/smoke_test.py",
-              "pip3 install pymysql -q 2>/dev/null",
-              "python3 /tmp/smoke_test.py || exit 1",
+              "python3 -m pip install pymysql",
+              "python3 /tmp/smoke_test.py",
               "rm /tmp/smoke_test.py"
             ]}' \
             --query 'Command.CommandId' \
