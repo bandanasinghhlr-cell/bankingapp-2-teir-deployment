@@ -9,7 +9,7 @@ params={
         WithDecryption=True)["Parameters"]
 }
 
-required=["DB_HOST","DB_NAME","DB_USER","DB_PASSWORD","DB_PORT"]
+required=["flask-db-1.cip88sig2tmw.us-east-1.rds.amazonaws.com","DB_NAME","DB_USER","DB_PASSWORD","DB_PORT"]
 missing=[k for k in required if k not in params]
 
 for k in required:
