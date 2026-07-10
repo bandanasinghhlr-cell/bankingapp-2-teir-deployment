@@ -9,7 +9,7 @@ params={
         WithDecryption=True)["Parameters"]
 }
 
-required=["flask-db-1.cip88sig2tmw.us-east-1.rds.amazonaws.com","DB_NAME","DB_USER","DB_PASSWORD","DB_PORT"]
+required=["DB_NAME","DB_USER","DB_PASSWORD","DB_PORT"]
 missing=[k for k in required if k not in params]
 
 for k in required:
@@ -26,7 +26,7 @@ if missing:
 # DB FIND banking_db and show tables
 try:
     connection=pymysql.connect(
-        host=params["flask-db-1.cip88sig2tmw.us-east-1.rds.amazonaws.com"],
+        # host=params["flask-db-1.cip88sig2tmw.us-east-1.rds.amazonaws.com"],
         user=params["DB_USER"],
         password=params["DB_PASSWORD"],
         database=params["DB_NAME"],
