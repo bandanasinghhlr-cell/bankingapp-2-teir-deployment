@@ -13,7 +13,7 @@ def get_param(name):
 
 try:
     conn=pymysql.connect(
-        host=(flask-db-1.cip88sig2tmw.us-east-1.rds.amazonaws.com),
+        host="flask-db-1.cip88sig2tmw.us-east-1.rds.amazonaws.com",
         port=int(get_param("DB_PORT")),
         user=get_param("DB_USER"),
         password=get_param("DB_PASSWORD"),
