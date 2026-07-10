@@ -26,7 +26,7 @@ if missing:
 # DB FIND banking_db and show tables
 try:
     connection=pymysql.connect(
-        host=params["DB_HOST"],
+        host=params["flask-db-1.cip88sig2tmw.us-east-1.rds.amazonaws.com"],
         user=params["DB_USER"],
         password=params["DB_PASSWORD"],
         database=params["DB_NAME"],
