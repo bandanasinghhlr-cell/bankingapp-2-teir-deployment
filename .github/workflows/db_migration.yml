@@ -37,7 +37,7 @@ jobs:
             --document-name "AWS-RunShellScript" \
             --parameters '{"commands":[
               "aws s3 cp s3://879246538736-devops-scripts/init.py /tmp/init.py",
-              "aws s3 cp s3://879246538736-devops-scripts/init.sql /tmp/init.py",
+              "aws s3 cp s3://879246538736-devops-scripts/init.sql /tmp/init.sql",
               "python3 /tmp/init.py || exit 1",
               "rm /tmp/init.py"
             ]}' \
