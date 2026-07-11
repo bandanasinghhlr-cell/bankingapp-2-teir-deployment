@@ -59,7 +59,7 @@ jobs:
               "docker pull 879246538736.dkr.ecr.us-east-1.amazonaws.com/flaskapp-simplebank:v1",
               "docker stop simplebank 2>/dev/null || true",
               "docker rm simplebank 2>/dev/null || true",
-              "cd /home/ubuntu/app && IMAGE_TAG=v1 docker compose up -d",
+              "cd /home/ubuntu/app && IMAGE_TAG=v1 docker-compose up -d",
               "docker ps --filter name=simplebank --format \"{{.Status}}\" | grep -q Up && echo CONTAINER_RUNNING || (echo CONTAINER_FAILED && exit 1)"
             ]}' \
             --query "Command.CommandId" \
